@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frinx_job_pooler/utils/global_app_constants.dart';
+import 'package:frinx_job_pooler/design//app_home.dart';
 
 void main() {
   runApp(
-    MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('FRINX Job Pool Machine'),
-          backgroundColor: Colors.blueGrey[900],
-        ),
-        backgroundColor: Colors.blueGrey[100],
-        body: Center(
-          child: Image(image: AssetImage('images/unicorn.jpg')),
-        ),
+    GlobalAppConstants(
+      child: MaterialApp(
+        home: AppHome(),
       ),
     ),
   );
