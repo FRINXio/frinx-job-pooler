@@ -4,7 +4,7 @@ class MyJobsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('todo: my jobs'),
+      child: Image(image: AssetImage('images/unicorn.jpg')),
     );
   }
 }
