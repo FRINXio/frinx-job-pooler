@@ -51,7 +51,7 @@ class JobsCache {
               "Post installation checks completed successfully.\n"
               "Job duration: 1hr 23min\n"
               "Job is finished. Thank you!",
-          jobState: JobState.accepted)
+          jobState: JobState.waiting)
     ];
   }
 }

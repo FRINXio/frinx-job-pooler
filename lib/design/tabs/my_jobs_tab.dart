@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:frinx_job_pooler/cache/JobsCache.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_button.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_description_widget.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_location_widget.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_title_widget.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_workflowOutput_widget.dart';
 import 'package:frinx_job_pooler/model/job_description.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
+
+import 'common/job_button.dart';
+import 'templates/job_entry_template.dart';
+import 'templates/job_state_template.dart';
 
 class MyJobsTab extends StatelessWidget {
   @override
@@ -25,98 +24,34 @@ class _JobList extends StatefulWidget {
   }
 }
 
-class _JobListState extends State<_JobList> {
-  final jobsCache = JobsCache();
-
-  Future<List<JobDescription>> _futureJobData;
-  var refreshKey = GlobalKey<RefreshIndicatorState>();
-
+class _JobListState extends JobStateTemplate {
   @override
-  void initState() {
-    super.initState();
-    _futureJobData = _getAcceptedJobs(jobsCache.getCachedJobData());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<JobDescription>>(
-      future: _futureJobData,
-      builder: (context, snapshot) {
-        var jobData = snapshot.data;
-        if (snapshot.connectionState == ConnectionState.done) {
-          return RefreshIndicator(
-            key: refreshKey,
-            onRefresh: _refreshList,
-            child: ListView.builder(
-              itemBuilder: (BuildContext context, int index) =>
-                  _JobEntry(jobData[index], this._removeJobWithId),
-              itemCount: jobData.length,
-            ),
-          );
-        } else {
-          return Align(
-              alignment: Alignment.center,
-              child: new CircularProgressIndicator());
-        }
-      },
-    );
-  }
-
-  void _removeJobWithId(int jobId) {
-    setState(() {
-      _futureJobData = jobsCache.removeJobEntryFromCache(jobId);
-    });
-  }
-
-  Future<Null> _refreshList() async {
-    refreshKey.currentState?.show(atTop: false);
-    setState(() {
-      _futureJobData = _getAcceptedJobs(jobsCache.refreshJobData());
-    });
-  }
-
-  static Future<List<JobDescription>> _getAcceptedJobs(
-      Future<List<JobDescription>> acceptedJobs) {
-    return acceptedJobs.then((list) =>
+  Future<List<JobDescription>> getFilteredJobs(
+      Future<List<JobDescription>> jobs) {
+    return jobs.then((list) =>
         list.where((entry) => entry.jobState == JobState.accepted).toList());
+  }
+
+  @override
+  JobEntryTemplate getJobEntry(
+      JobDescription jobDescription, Function jobRemovalFunction) {
+    return _JobEntry(jobDescription, jobRemovalFunction);
   }
 }
 
-class _JobEntry extends StatelessWidget {
+class _JobEntry extends JobEntryTemplate {
   static const String BUTTON_TITLE = 'Report installation completed';
 
-  final JobDescription jobDescription;
-  final Function jobRemovalCallback;
-
-  const _JobEntry(this.jobDescription, this.jobRemovalCallback);
+  const _JobEntry(JobDescription jobDescription, Function jobRemovalCallback)
+      : super(jobDescription, jobRemovalCallback);
 
   @override
-  Widget build(BuildContext context) {
-    return ExpansionTile(
-      key: PageStorageKey<JobDescription>(jobDescription),
-      title: new JobTitleWidget(jobDescription),
-      children: <Widget>[_buildJobDescriptionWidget(context)],
-    );
-  }
-
-  Widget _buildJobDescriptionWidget(BuildContext context) {
-    final List<Widget> rows = [];
-    if (jobDescription.description != null) {
-      rows.add(JobDescriptionWidget(jobDescription));
-    }
-    if (jobDescription.location != null) {
-      rows.add(JobLocationWidget(jobDescription));
-    }
-    if (jobDescription.workflowOutput != null) {
-      rows.add(JobWorkflowOutputWidget(jobDescription));
-    }
+  List<Widget> getStatelessRows(BuildContext context) {
+    var rows = super.getStatelessRows(context);
     rows.add(
       JobButton(BUTTON_TITLE, () => _handleButtonPressed(context)),
     );
-
-    return Column(
-      children: rows,
-    );
+    return rows;
   }
 
   void _handleButtonPressed(BuildContext context) {
