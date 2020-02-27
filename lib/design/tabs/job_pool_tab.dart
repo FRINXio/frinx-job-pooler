@@ -34,50 +34,59 @@ class _JobListState extends State<_JobList> {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) =>
-          _JobItem(jobData[index]),
+          _JobEntry(jobData[index], this._removeJobWithId),
       itemCount: jobData.length,
     );
   }
+
+  void _removeJobWithId(int jobId) {
+    setState(() {
+      jobData.removeWhere((entry) => entry.jobId == jobId);
+    });
+  }
 }
 
-class _JobItem extends StatelessWidget {
+class _JobEntry extends StatelessWidget {
   static const String ID_FORMAT = '%02d';
   static const String BUTTON_TITLE = 'Accept job';
-  final JobDescription entry;
 
-  const _JobItem(this.entry);
+  final JobDescription jobDescription;
+  final Function jobRemovalCallback;
+
+  const _JobEntry(this.jobDescription, this.jobRemovalCallback);
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      key: PageStorageKey<JobDescription>(entry),
-      title: new JobTitleWidget(entry),
-      children: <Widget>[_buildJobDescriptionWidget(context, entry)],
+      key: PageStorageKey<JobDescription>(jobDescription),
+      title: new JobTitleWidget(jobDescription),
+      children: <Widget>[_buildJobDescriptionWidget(context)],
     );
   }
 
-  Widget _buildJobDescriptionWidget(
-      BuildContext context, JobDescription jobEntry) {
+  Widget _buildJobDescriptionWidget(BuildContext context) {
     final List<Widget> rows = [];
-    if (entry.description != null) {
-      rows.add(JobDescriptionWidget(jobEntry));
+    if (jobDescription.description != null) {
+      rows.add(JobDescriptionWidget(jobDescription));
     }
-    if (entry.location != null) {
-      rows.add(JobLocationWidget(jobEntry));
+    if (jobDescription.location != null) {
+      rows.add(JobLocationWidget(jobDescription));
     }
     rows.add(
-      JobButton(
-        BUTTON_TITLE,
-        () => Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Job \'${entry.jobTitle}\' has been accepted'),
-          ),
-        ),
-      ),
+      JobButton(BUTTON_TITLE, () => _handleButtonPressed(context)),
     );
 
     return Column(
       children: rows,
     );
+  }
+
+  void _handleButtonPressed(BuildContext context) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Job \'${jobDescription.jobTitle}\' has been accepted'),
+      ),
+    );
+    Function.apply(jobRemovalCallback, [jobDescription.jobId]);
   }
 }
