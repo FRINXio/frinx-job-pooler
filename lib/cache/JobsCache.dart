@@ -24,6 +24,14 @@ class JobsCache {
     return actualJobList;
   }
 
+  Future<List<JobDescription>> removeJobEntryFromCache(int jobId) {
+    actualJobList = actualJobList.then((list) {
+      list.removeWhere((entry) => entry.jobId == jobId);
+      return list;
+    });
+    return actualJobList;
+  }
+
   Future<List<JobDescription>> _getMyJobData() async {
     return [
       JobDescription.myJobs(1, 'Job 1',

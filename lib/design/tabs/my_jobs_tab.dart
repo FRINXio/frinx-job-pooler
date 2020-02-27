@@ -34,7 +34,7 @@ class _JobListState extends State<_JobList> {
   @override
   void initState() {
     super.initState();
-    _futureJobData = jobsCache.getCachedJobData();
+    _futureJobData = _getAcceptedJobs(jobsCache.getCachedJobData());
   }
 
   @override
@@ -63,17 +63,22 @@ class _JobListState extends State<_JobList> {
   }
 
   void _removeJobWithId(int jobId) {
-//    setState(() {
-//      jobData.removeWhere((entry) => entry.jobId == jobId);
-//    });
+    setState(() {
+      _futureJobData = jobsCache.removeJobEntryFromCache(jobId);
+    });
   }
 
   Future<Null> _refreshList() async {
     refreshKey.currentState?.show(atTop: false);
     setState(() {
-      _futureJobData = jobsCache.refreshJobData().then((list) =>
-          list.where((entry) => entry.jobState == JobState.accepted).toList());
+      _futureJobData = _getAcceptedJobs(jobsCache.refreshJobData());
     });
+  }
+
+  static Future<List<JobDescription>> _getAcceptedJobs(
+      Future<List<JobDescription>> acceptedJobs) {
+    return acceptedJobs.then((list) =>
+        list.where((entry) => entry.jobState == JobState.accepted).toList());
   }
 }
 
