@@ -29,7 +29,7 @@ class _JobListState extends JobStateTemplate {
   Future<List<JobDescription>> getFilteredJobs(
       Future<List<JobDescription>> jobs) {
     return jobs.then((list) =>
-        list.where((entry) => entry.jobState == JobState.accepted).toList());
+        list.where((entry) => entry.jobState == JobState.wait_for_installation_complete).toList());
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:frinx_job_pooler/model/job_description.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
+import 'package:frinx_job_pooler/utils/apiFunctions/requests.dart';
 
 class JobsCache {
   static final JobsCache _instance = JobsCache._internal();
@@ -14,13 +15,13 @@ class JobsCache {
 
   Future<List<JobDescription>> getCachedJobData() {
     if (actualJobList == null) {
-      actualJobList = _getMyJobData();
+      actualJobList = getMyJobData();
     }
     return actualJobList;
   }
 
   Future<List<JobDescription>> refreshJobData() {
-    actualJobList = _getMyJobData();
+    actualJobList = getMyJobData();
     return actualJobList;
   }
 
@@ -34,7 +35,7 @@ class JobsCache {
 
   Future<List<JobDescription>> _getMyJobData() async {
     return [
-      JobDescription.myJobs(1, 'Job 1',
+      JobDescription.myJobs(1.toString(), 'Job 1',
           description: 'This is the first job',
           location: 'Mlynské nivy 4959/48,\n821 09 Bratislava,\Slovakia',
           jobCoordinates: JobCoordinates(-3.823216, -38.481700),
@@ -42,8 +43,8 @@ class JobsCache {
               "Post installation checks completed successfully.\n"
               "Job duration: 1hr 23min\n"
               "Job is finished. Thank you!",
-          jobState: JobState.accepted),
-      JobDescription.myJobs(2, 'Job 2',
+          jobState: JobState.wait_for_installation_complete),
+      JobDescription.myJobs(2.toString(), 'Job 2',
           description: 'This is the second job',
           location: 'Mlynské nivy 4959/48,\n821 09 Bratislava,\Slovakia',
           jobCoordinates: JobCoordinates(-3.823216, -38.481700),
@@ -51,7 +52,7 @@ class JobsCache {
               "Post installation checks completed successfully.\n"
               "Job duration: 1hr 23min\n"
               "Job is finished. Thank you!",
-          jobState: JobState.waiting)
+          jobState: JobState.wait_for_installation_complete)
     ];
   }
 }

@@ -4,7 +4,6 @@ import 'package:frinx_job_pooler/utils/global_app_constants.dart';
 import 'package:sprintf/sprintf.dart';
 
 class JobTitleWidget extends StatelessWidget {
-  static const String ID_FORMAT = '%02d';
 
   final JobDescription jobDescription;
 
@@ -18,7 +17,7 @@ class JobTitleWidget extends StatelessWidget {
         CircleAvatar(
           backgroundColor: Colors.blueGrey[900],
           child: Text(
-            sprintf(ID_FORMAT, [jobDescription.jobId]),
+            jobDescription.jobTitle.substring(0, 1),
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
