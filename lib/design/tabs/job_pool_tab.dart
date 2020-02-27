@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frinx_job_pooler/design/tabs/common/job_button.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_description_widget.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_location_widget.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_title_widget.dart';
 import 'package:frinx_job_pooler/model/job_description.dart';
+import 'package:frinx_job_pooler/utils/global_app_constants.dart';
 
 final List<JobDescription> jobData = <JobDescription>[
   JobDescription(1, 'Job 1',
@@ -29,6 +31,7 @@ class JobPoolTab extends StatelessWidget {
 
 class _JobItem extends StatelessWidget {
   static const String ID_FORMAT = '%02d';
+  static const String BUTTON_TITLE = 'Accept job';
   final JobDescription entry;
 
   const _JobItem(this.entry);
@@ -45,11 +48,17 @@ class _JobItem extends StatelessWidget {
   Widget _buildJobDescriptionWidget(JobDescription jobEntry) {
     final List<Widget> rows = [];
     if (entry.description != null) {
-      rows.add(new JobDescriptionWidget(jobEntry));
+      rows.add(JobDescriptionWidget(jobEntry));
     }
     if (entry.location != null) {
-      rows.add(new JobLocationWidget(jobEntry));
+      rows.add(JobLocationWidget(jobEntry));
     }
+    rows.add(Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+      child: JobButton(BUTTON_TITLE, () => {
+        // todo
+      }),
+    ));
 
     return Column(
       children: rows,
