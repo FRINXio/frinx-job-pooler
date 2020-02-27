@@ -12,7 +12,6 @@ abstract class JobStateTemplate extends State {
   @override
   void initState() {
     super.initState();
-//    _futureJobData = getFilteredJobs(jobsCache.refreshJobData());
     _futureJobData = getFilteredJobs(jobsCache.getCachedJobData());
   }
 
@@ -48,10 +47,8 @@ abstract class JobStateTemplate extends State {
   }
 
   Future<Null> _refreshList() async {
-    refreshKey.currentState?.show(atTop: false);
     setState(() {
-//      _futureJobData = getFilteredJobs(jobsCache.refreshJobData());
-      _futureJobData = getFilteredJobs(jobsCache.getCachedJobData());
+      _futureJobData = getFilteredJobs(jobsCache.refreshJobData());
     });
   }
 
