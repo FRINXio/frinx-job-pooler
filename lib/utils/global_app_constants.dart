@@ -12,6 +12,8 @@ class GlobalAppConstants extends InheritedWidget {
 
   final paddingOfJobEntry =
       const EdgeInsets.only(left: 10, right: 20, bottom: 10, top: 10);
+  final paddingOfJobButton =
+      const EdgeInsets.only(left: 20, right: 20, bottom: 10);
 
   static GlobalAppConstants of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<GlobalAppConstants>();

@@ -53,12 +53,10 @@ class _JobItem extends StatelessWidget {
     if (entry.location != null) {
       rows.add(JobLocationWidget(jobEntry));
     }
-    rows.add(Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
-      child: JobButton(BUTTON_TITLE, () => {
+    rows.add(JobButton(BUTTON_TITLE, () => {
         // todo
       }),
-    ));
+    );
 
     return Column(
       children: rows,

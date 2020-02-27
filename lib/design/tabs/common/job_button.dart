@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frinx_job_pooler/utils/global_app_constants.dart';
 
 class JobButton extends StatelessWidget {
   final String buttonTitle;
@@ -8,16 +9,19 @@ class JobButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return SizedBox(
-      width: double.infinity,
-      child: RaisedButton(
-        onPressed: onPressedAction,
-        child: Text(
-          buttonTitle,
-          style: TextStyle(color: Colors.white),
+    var constants = GlobalAppConstants.of(context);
+    return Padding(
+      padding: constants.paddingOfJobEntry,
+      child: SizedBox(
+        width: double.infinity,
+        child: RaisedButton(
+          onPressed: onPressedAction,
+          child: Text(
+            buttonTitle,
+            style: TextStyle(color: Colors.white),
+          ),
+          color: Colors.blueGrey[900],
         ),
-        color: Colors.blueGrey[900],
       ),
     );
   }
