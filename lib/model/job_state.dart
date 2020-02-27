@@ -1,0 +1,4 @@
+enum JobState {
+  waiting,
+  accepted,
+}
