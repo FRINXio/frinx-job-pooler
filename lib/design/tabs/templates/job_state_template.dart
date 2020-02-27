@@ -40,7 +40,7 @@ abstract class JobStateTemplate extends State {
     );
   }
 
-  void _removeJobWithId(int jobId) {
+  void _removeJobWithId(String jobId) {
     setState(() {
       _futureJobData = jobsCache.removeJobEntryFromCache(jobId);
     });

@@ -25,10 +25,11 @@ class JobsCache {
     return actualJobList;
   }
 
-  Future<List<JobDescription>> removeJobEntryFromCache(int jobId) {
+  Future<List<JobDescription>> removeJobEntryFromCache(String jobId) {
     actualJobList = actualJobList.then((list) {
-      list.removeWhere((entry) => entry.jobId == jobId);
-      return list;
+      List<JobDescription> tempList = List.of(list);
+      tempList.removeWhere((entry) => entry.jobId == jobId);
+      return tempList;
     });
     return actualJobList;
   }

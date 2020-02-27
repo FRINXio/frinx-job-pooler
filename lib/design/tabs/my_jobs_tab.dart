@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_button.dart';
 import 'package:frinx_job_pooler/model/job_description.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
+import 'package:frinx_job_pooler/utils/apiFunctions/requests.dart';
 
 import 'common/job_button.dart';
 import 'templates/job_entry_template.dart';
@@ -55,6 +56,7 @@ class _JobEntry extends JobEntryTemplate {
   }
 
   void _handleButtonPressed(BuildContext context) {
+    postFinishingJob(jobDescription.jobId);
     Scaffold.of(context).showSnackBar(
       SnackBar(
         content: Text('Job \'${jobDescription.jobTitle}\' has been completed'),

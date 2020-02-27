@@ -3,6 +3,7 @@ import 'package:frinx_job_pooler/design/tabs/common/job_button.dart';
 import 'package:frinx_job_pooler/design/tabs/templates/job_entry_template.dart';
 import 'package:frinx_job_pooler/model/job_description.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
+import 'package:frinx_job_pooler/utils/apiFunctions/requests.dart';
 
 import 'templates/job_state_template.dart';
 
@@ -53,6 +54,7 @@ class _JobEntry extends JobEntryTemplate {
   }
 
   void _handleButtonPressed(BuildContext context) {
+    postAcceptingJob(jobDescription.jobId);
     Scaffold.of(context).showSnackBar(
       SnackBar(
         content: Text('Job \'${jobDescription.jobTitle}\' has been accepted'),
