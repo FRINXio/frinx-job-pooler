@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 class GlobalAppConstants extends InheritedWidget {
-  final appTitle = 'FRINX Job Pool Machine';
+  final appTitle = 'Job Pool Machine';
   final tabJobPoolName = "Job pool";
   final tabMyJobsName = "My jobs";
 
@@ -9,6 +9,7 @@ class GlobalAppConstants extends InheritedWidget {
   final intendIconFromText = 10.0;
   final maxLinesOfJobTitle = 2;
   final sizeJobPoolIcon = 60.0;
+  final frinxLogoWidth = 100.0;
 
   final paddingOfJobEntry =
       const EdgeInsets.only(left: 10, right: 20, bottom: 10, top: 10);

@@ -31,7 +31,17 @@ class _HomeAppTabsState extends State<AppHome>
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
-            title: Text(constants.appTitle),
+            title: Row(
+              children: <Widget>[
+                Text(constants.appTitle),
+                Container(
+                    child: Image(
+                        fit: BoxFit.fitWidth,
+                        width: constants.frinxLogoWidth,
+                        image: AssetImage('images/row_logo.png'))),
+              ],
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
             backgroundColor: Colors.blueGrey[900],
             snap: true,
             floating: true,
