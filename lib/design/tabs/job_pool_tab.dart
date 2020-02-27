@@ -22,21 +22,89 @@ class _JobList extends StatefulWidget {
 }
 
 class _JobListState extends State<_JobList> {
-  final List<JobDescription> jobData = <JobDescription>[
-    JobDescription(1, 'Job 1',
-        description: 'This is the first job',
-        location: 'Mlynské nivy 4959/48,\n821 09 Bratislava,\Slovakia',
-        jobCoordinates: JobCoordinates(-3.823216, -38.481700)),
-    JobDescription(2, 'Job 2', description: 'This is the second job'),
-  ];
+  List<JobDescription> jobData = <JobDescription>[];
+  Future<List<JobDescription>> _futureJobData;
+  bool firstStart = true;
+
+  var refreshKey = GlobalKey<RefreshIndicatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _futureJobData = getMyJobData();
+    refreshList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (BuildContext context, int index) =>
-          _JobEntry(jobData[index], this._removeJobWithId),
-      itemCount: jobData.length,
+    return FutureBuilder<List<JobDescription>>(
+      future: _futureJobData,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return RefreshIndicator(
+            key: refreshKey,
+            onRefresh: refreshList,
+            child: ListView.builder(
+              itemBuilder: (BuildContext context, int index) =>
+                  _JobEntry(jobData[index], this._removeJobWithId),
+              itemCount: jobData.length,
+            ),
+          );
+        } else {
+          return Align(
+              alignment: Alignment.center,
+              child: new CircularProgressIndicator());
+        }
+      },
     );
+  }
+
+  Future<List<JobDescription>> getMyJobData() async {
+    await Future.delayed(Duration(seconds: 2));
+    return <JobDescription>[
+      JobDescription.myJobs(1, 'Job 1',
+          description: 'This is the first job',
+          location: 'Mlynské nivy 4959/48,\n821 09 Bratislava,\Slovakia',
+          jobCoordinates: JobCoordinates(-3.823216, -38.481700),
+          workflowOutput: "Configuration completed successfully.\n"
+              "Post installation checks completed successfully.\n"
+              "Job duration: 1hr 23min\n"
+              "Job is finished. Thank you!"),
+      JobDescription.myJobs(2, 'Job 2',
+          description: 'This is the second job',
+          location: 'Mlynské nivy 4959/48,\n821 09 Bratislava,\Slovakia',
+          jobCoordinates: JobCoordinates(-3.823216, -38.481700),
+          workflowOutput: "Configuration completed successfully.\n"
+              "Post installation checks completed successfully.\n"
+              "Job duration: 1hr 23min\n"
+              "Job is finished. Thank you!")
+    ];
+  }
+
+  Future<Null> refreshList() async {
+    refreshKey.currentState?.show(atTop: false);
+    await Future.delayed(Duration(seconds: 2));
+
+    setState(() {
+      jobData = <JobDescription>[
+        JobDescription.myJobs(1, 'Job 1',
+            description: 'This is the first job',
+            location: 'Mlynské nivy 4959/48,\n821 09 Bratislava,\Slovakia',
+            jobCoordinates: JobCoordinates(-3.823216, -38.481700),
+            workflowOutput: "Configuration completed successfully.\n"
+                "Post installation checks completed successfully.\n"
+                "Job duration: 1hr 23min\n"
+                "Job is finished. Thank you!"),
+        JobDescription.myJobs(2, 'Job 2',
+            description: 'This is the second job',
+            location: 'Mlynské nivy 4959/48,\n821 09 Bratislava,\Slovakia',
+            jobCoordinates: JobCoordinates(-3.823216, -38.481700),
+            workflowOutput: "Configuration completed successfully.\n"
+                "Post installation checks completed successfully.\n"
+                "Job duration: 1hr 23min\n"
+                "Job is finished. Thank you!")
+      ];
+    });
   }
 
   void _removeJobWithId(int jobId) {
