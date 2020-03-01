@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_description_widget.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_location_widget.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_title_widget.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_workflowOutput_widget.dart';
+import 'package:frinx_job_pooler/design/tabs/common/job_workflow_output_widget.dart';
 import 'package:frinx_job_pooler/model/job_description.dart';
 
 abstract class JobEntryTemplate extends StatelessWidget {

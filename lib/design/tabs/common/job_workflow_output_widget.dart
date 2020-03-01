@@ -24,7 +24,6 @@ class JobWorkflowOutputWidget extends StatelessWidget {
               jobDescription.workflowOutput,
               softWrap: true,
               overflow: TextOverflow.fade,
-//              textAlign: TextAlign.justify,
             ),
           ),
         ],

@@ -3,9 +3,9 @@ import 'package:frinx_job_pooler/design/tabs/common/job_button.dart';
 import 'package:frinx_job_pooler/design/tabs/templates/job_entry_template.dart';
 import 'package:frinx_job_pooler/model/job_description.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
-import 'package:frinx_job_pooler/utils/apiFunctions/requests.dart';
+import 'package:frinx_job_pooler/rest/requests_broker.dart';
 
-import 'templates/job_state_template.dart';
+import 'templates/job_list_state_template.dart';
 
 class JobPoolTab extends StatelessWidget {
   @override
@@ -23,7 +23,7 @@ class _JobList extends StatefulWidget {
   }
 }
 
-class _JobListState extends JobStateTemplate {
+class _JobListState extends JobListStateTemplate {
   @override
   Future<List<JobDescription>> getFilteredJobs(
       Future<List<JobDescription>> jobs) {
@@ -39,7 +39,7 @@ class _JobListState extends JobStateTemplate {
 }
 
 class _JobEntry extends JobEntryTemplate {
-  static const String BUTTON_TITLE = 'Accept job';
+  static const String _BUTTON_TITLE = 'Accept job';
 
   const _JobEntry(JobDescription jobDescription, Function jobRemovalCallback)
       : super(jobDescription, jobRemovalCallback);
@@ -48,13 +48,13 @@ class _JobEntry extends JobEntryTemplate {
   List<Widget> getStatelessRows(BuildContext context) {
     var rows = super.getStatelessRows(context);
     rows.add(
-      JobButton(BUTTON_TITLE, () => _handleButtonPressed(context)),
+      JobButton(_BUTTON_TITLE, () => _handleButtonPressed(context)),
     );
     return rows;
   }
 
   void _handleButtonPressed(BuildContext context) {
-    postAcceptingJob(jobDescription.jobId);
+    RequestsBroker().postAcceptingJob(jobDescription.jobId);
     Scaffold.of(context).showSnackBar(
       SnackBar(
         content: Text('Job \'${jobDescription.jobTitle}\' has been accepted'),

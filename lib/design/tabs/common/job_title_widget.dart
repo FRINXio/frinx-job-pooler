@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frinx_job_pooler/model/job_description.dart';
 import 'package:frinx_job_pooler/utils/global_app_constants.dart';
-import 'package:sprintf/sprintf.dart';
 
 class JobTitleWidget extends StatelessWidget {
 

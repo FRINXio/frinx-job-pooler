@@ -3,11 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_button.dart';
 import 'package:frinx_job_pooler/model/job_description.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
-import 'package:frinx_job_pooler/utils/apiFunctions/requests.dart';
+import 'package:frinx_job_pooler/rest/requests_broker.dart';
 
 import 'common/job_button.dart';
 import 'templates/job_entry_template.dart';
-import 'templates/job_state_template.dart';
+import 'templates/job_list_state_template.dart';
 
 class MyJobsTab extends StatelessWidget {
   @override
@@ -25,12 +25,14 @@ class _JobList extends StatefulWidget {
   }
 }
 
-class _JobListState extends JobStateTemplate {
+class _JobListState extends JobListStateTemplate {
   @override
   Future<List<JobDescription>> getFilteredJobs(
       Future<List<JobDescription>> jobs) {
-    return jobs.then((list) =>
-        list.where((entry) => entry.jobState == JobState.wait_for_installation_complete).toList());
+    return jobs.then((list) => list
+        .where((entry) =>
+            entry.jobState == JobState.wait_for_installation_complete)
+        .toList());
   }
 
   @override
@@ -41,7 +43,7 @@ class _JobListState extends JobStateTemplate {
 }
 
 class _JobEntry extends JobEntryTemplate {
-  static const String BUTTON_TITLE = 'Report installation completed';
+  static const String _BUTTON_TITLE = 'Report installation completed';
 
   const _JobEntry(JobDescription jobDescription, Function jobRemovalCallback)
       : super(jobDescription, jobRemovalCallback);
@@ -50,13 +52,13 @@ class _JobEntry extends JobEntryTemplate {
   List<Widget> getStatelessRows(BuildContext context) {
     var rows = super.getStatelessRows(context);
     rows.add(
-      JobButton(BUTTON_TITLE, () => _handleButtonPressed(context)),
+      JobButton(_BUTTON_TITLE, () => _handleButtonPressed(context)),
     );
     return rows;
   }
 
   void _handleButtonPressed(BuildContext context) {
-    postFinishingJob(jobDescription.jobId);
+    RequestsBroker().postFinishingJob(jobDescription.jobId);
     Scaffold.of(context).showSnackBar(
       SnackBar(
         content: Text('Job \'${jobDescription.jobTitle}\' has been completed'),
