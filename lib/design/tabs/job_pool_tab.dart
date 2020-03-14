@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_button.dart';
-import 'package:frinx_job_pooler/design/tabs/templates/job_entry_template.dart';
-import 'package:frinx_job_pooler/model/job_description.dart';
+import 'package:frinx_job_pooler/model/job_entry.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
 import 'package:frinx_job_pooler/rest/requests_broker.dart';
 
-import 'templates/job_list_state_template.dart';
+import 'common/job_button.dart';
+import 'job_list_template.dart';
 
 class JobPoolTab extends StatelessWidget {
   @override
@@ -23,43 +22,33 @@ class _JobList extends StatefulWidget {
   }
 }
 
-class _JobListState extends JobListStateTemplate {
-  @override
-  Future<List<JobDescription>> getFilteredJobs(
-      Future<List<JobDescription>> jobs) {
-    return jobs.then((list) =>
-        list.where((entry) => entry.jobState == JobState.wait_for_acceptance).toList());
-  }
-
-  @override
-  JobEntryTemplate getJobEntry(
-      JobDescription jobDescription, Function jobRemovalFunction) {
-    return _JobEntry(jobDescription, jobRemovalFunction);
-  }
-}
-
-class _JobEntry extends JobEntryTemplate {
+class _JobListState extends JobListTemplate {
   static const String _BUTTON_TITLE = 'Accept job';
 
-  const _JobEntry(JobDescription jobDescription, Function jobRemovalCallback)
-      : super(jobDescription, jobRemovalCallback);
+  @override
+  Future<List<JobEntry>> getFilteredJobs(
+      Future<List<JobEntry>> jobs) {
+    return jobs.then((list) => list
+        .where((entry) => entry.jobState == JobState.wait_for_acceptance)
+        .toList());
+  }
 
   @override
-  List<Widget> getStatelessRows(BuildContext context) {
-    var rows = super.getStatelessRows(context);
+  List<Widget> getJobEntryRows(BuildContext context, JobEntry jobEntry) {
+    var rows = super.getJobEntryRows(context, jobEntry);
     rows.add(
-      JobButton(_BUTTON_TITLE, () => _handleButtonPressed(context)),
+      JobButton(_BUTTON_TITLE, () => _handleButtonPressed(context, jobEntry)),
     );
     return rows;
   }
 
-  void _handleButtonPressed(BuildContext context) {
-    RequestsBroker().postAcceptingJob(jobDescription.jobId);
+  void _handleButtonPressed(BuildContext context, JobEntry jobEntry) {
+    RequestsBroker().postAcceptingJob(jobEntry.jobId);
     Scaffold.of(context).showSnackBar(
       SnackBar(
-        content: Text('Job \'${jobDescription.jobTitle}\' has been accepted'),
+        content: Text('Job \'${jobEntry.jobTitle}\' has been accepted'),
       ),
     );
-    Function.apply(jobRemovalCallback, [jobDescription.jobId]);
+    removeJobFromCache(jobEntry);
   }
 }

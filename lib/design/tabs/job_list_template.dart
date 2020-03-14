@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:frinx_job_pooler/cache/jobs_cache.dart';
-import 'package:frinx_job_pooler/design/tabs/templates/job_entry_template.dart';
-import 'package:frinx_job_pooler/model/job_description.dart';
+import 'package:frinx_job_pooler/design/tabs/common/job_description_widget.dart';
+import 'package:frinx_job_pooler/design/tabs/common/job_location_widget.dart';
+import 'package:frinx_job_pooler/design/tabs/common/job_title_widget.dart';
+import 'package:frinx_job_pooler/design/tabs/common/job_workflow_output_widget.dart';
+import 'package:frinx_job_pooler/model/job_entry.dart';
 
-abstract class JobListStateTemplate extends State {
+abstract class JobListTemplate extends State {
   final _jobsCache = JobsCache();
-  Future<List<JobDescription>> _futureJobData;
+  Future<List<JobEntry>> _futureJobData;
 
   @override
   void initState() {
@@ -15,7 +18,7 @@ abstract class JobListStateTemplate extends State {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<JobDescription>>(
+    return FutureBuilder<List<JobEntry>>(
       future: _futureJobData,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -64,22 +67,16 @@ abstract class JobListStateTemplate extends State {
   }
 
   RefreshIndicator _handleFinishedLoading(
-      AsyncSnapshot<List<JobDescription>> snapshot) {
+      AsyncSnapshot<List<JobEntry>> snapshot) {
     var jobData = snapshot.data;
     return RefreshIndicator(
       onRefresh: _refreshList,
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) =>
-            getJobEntry(jobData[index], this._removeJobWithId),
+            _getJobEntry(jobData[index]),
         itemCount: jobData.length,
       ),
     );
-  }
-
-  void _removeJobWithId(String jobId) {
-    setState(() {
-      _futureJobData = _jobsCache.removeJobEntryFromCache(jobId);
-    });
   }
 
   Future<Null> _refreshList() async {
@@ -88,9 +85,38 @@ abstract class JobListStateTemplate extends State {
     });
   }
 
-  Future<List<JobDescription>> getFilteredJobs(
-      Future<List<JobDescription>> jobs);
+  Widget _getJobEntry(JobEntry jobEntry) {
+    return ExpansionTile(
+      key: PageStorageKey<JobEntry>(jobEntry),
+      title: JobTitleWidget(jobEntry),
+      children: <Widget>[
+        Column(
+          children: getJobEntryRows(context, jobEntry),
+        )
+      ],
+    );
+  }
 
-  JobEntryTemplate getJobEntry(
-      JobDescription jobDescription, Function jobRemovalFunction);
+  List<Widget> getJobEntryRows(BuildContext context, JobEntry jobEntry) {
+    final List<Widget> rows = [];
+    if (jobEntry.description != null) {
+      rows.add(JobDescriptionWidget(jobEntry));
+    }
+    if (jobEntry.location != null) {
+      rows.add(JobLocationWidget(jobEntry));
+    }
+    if (jobEntry.workflowOutput != null) {
+      rows.add(JobWorkflowOutputWidget(jobEntry));
+    }
+    return rows;
+  }
+
+  void removeJobFromCache(JobEntry jobEntry) {
+    setState(() {
+      _futureJobData = _jobsCache.removeJobEntryFromCache(jobEntry.jobId);
+    });
+  }
+
+  Future<List<JobEntry>> getFilteredJobs(
+      Future<List<JobEntry>> jobs);
 }

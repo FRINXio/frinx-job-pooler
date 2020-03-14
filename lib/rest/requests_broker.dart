@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:frinx_job_pooler/model/job_description.dart';
+import 'package:frinx_job_pooler/model/job_entry.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
 
 class RequestsBroker {
@@ -43,7 +43,7 @@ class RequestsBroker {
     return response;
   }
 
-  Future<List<JobDescription>> getMyJobData() async {
+  Future<List<JobEntry>> getMyJobData() async {
     var response = await _restClient.get(DOMAIN + URL_ALL_JOBS);
 
     List<dynamic> responseAllJobsDynamic =
@@ -51,32 +51,32 @@ class RequestsBroker {
     List<String> responseAllJobs =
         responseAllJobsDynamic.cast<String>().toList();
 
-    List<Future<JobDescription>> jobDescriptions = [];
+    List<Future<JobEntry>> jobEntries = [];
     responseAllJobs.forEach((workflow) {
-      Future<JobDescription> _jobDescription = _getOneMyJobData(workflow);
-      jobDescriptions.add(_jobDescription);
+      Future<JobEntry> jobEntry = _getOneMyJobData(workflow);
+      jobEntries.add(jobEntry);
     });
 
-    return Future.wait(jobDescriptions);
+    return Future.wait(jobEntries);
   }
 
-  Future<JobDescription> _getOneMyJobData(String workflow) async {
+  Future<JobEntry> _getOneMyJobData(String workflow) async {
     var response = await _restClient.get(DOMAIN + "/" + workflow);
-    JobDescription jobDescription;
+    JobEntry jobEntry;
     response.data['tasks'].forEach((element) {
       if (element["status"] == "IN_PROGRESS") {
         if (element["taskDefName"] ==
             _getJobStateString(JobState.wait_for_acceptance)) {
-          jobDescription = JobDescription.fromJson(
+          jobEntry = JobEntry.fromJson(
               response.data, JobState.wait_for_acceptance);
         } else if (element["taskDefName"] ==
             _getJobStateString(JobState.wait_for_installation_complete)) {
-          jobDescription = JobDescription.fromJson(
+          jobEntry = JobEntry.fromJson(
               response.data, JobState.wait_for_installation_complete);
         }
       }
     });
-    return jobDescription;
+    return jobEntry;
   }
 
   static _getJobStateString(JobState jobState) {

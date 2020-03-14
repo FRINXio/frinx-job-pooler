@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/model/job_description.dart';
+import 'package:frinx_job_pooler/model/job_entry.dart';
 import 'package:frinx_job_pooler/utils/global_app_constants.dart';
 import 'package:frinx_job_pooler/utils/map_utils.dart';
 
 class JobLocationWidget extends StatelessWidget {
-  final JobDescription jobDescription;
+  final JobEntry jobEntry;
 
-  const JobLocationWidget(this.jobDescription);
+  const JobLocationWidget(this.jobEntry);
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +14,11 @@ class JobLocationWidget extends StatelessWidget {
     return Container(
       child: Row(
         children: <Widget>[
-          _getGpsIconWidget(constants, jobDescription.jobCoordinates),
+          _getGpsIconWidget(constants, jobEntry.jobCoordinates),
           SizedBox(width: constants.intendIconFromText),
           Expanded(
             child: Text(
-              jobDescription.location,
+              jobEntry.location,
               softWrap: true,
               overflow: TextOverflow.fade,
               textAlign: TextAlign.justify,

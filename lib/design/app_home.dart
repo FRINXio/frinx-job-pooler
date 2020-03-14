@@ -38,7 +38,7 @@ class _HomeAppTabsState extends State<AppHome>
                     child: Image(
                         fit: BoxFit.fitWidth,
                         width: constants.frinxLogoWidth,
-                        image: AssetImage('images/row_logo.png'))),
+                        image: const AssetImage('images/row_logo.png'))),
               ],
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
             ),
@@ -50,7 +50,7 @@ class _HomeAppTabsState extends State<AppHome>
                 Tab(
                   icon: Row(
                     children: <Widget>[
-                      Icon(Icons.home),
+                      const Icon(Icons.home),
                       Text(TAB_TEXT_PADDING + constants.tabMyJobsName)
                     ],
                   ),
@@ -58,7 +58,7 @@ class _HomeAppTabsState extends State<AppHome>
                 Tab(
                   icon: Row(
                     children: <Widget>[
-                      Icon(Icons.format_list_numbered),
+                      const Icon(Icons.format_list_numbered),
                       Text(TAB_TEXT_PADDING + constants.tabJobPoolName)
                     ],
                   ),

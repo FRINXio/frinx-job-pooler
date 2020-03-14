@@ -18,7 +18,7 @@ class JobButton extends StatelessWidget {
           onPressed: onPressedAction,
           child: Text(
             buttonTitle,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
           color: Colors.blueGrey[900],
         ),

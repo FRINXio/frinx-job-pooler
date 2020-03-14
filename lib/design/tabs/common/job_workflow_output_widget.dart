@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/model/job_description.dart';
+import 'package:frinx_job_pooler/model/job_entry.dart';
 import 'package:frinx_job_pooler/utils/global_app_constants.dart';
 
 class JobWorkflowOutputWidget extends StatelessWidget {
-  final JobDescription jobDescription;
+  final JobEntry jobEntry;
 
-  const JobWorkflowOutputWidget(this.jobDescription);
+  const JobWorkflowOutputWidget(this.jobEntry);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class JobWorkflowOutputWidget extends StatelessWidget {
           SizedBox(width: constants.intendIconFromText),
           Expanded(
             child: Text(
-              jobDescription.workflowOutput,
+              jobEntry.workflowOutput,
               softWrap: true,
               overflow: TextOverflow.fade,
             ),

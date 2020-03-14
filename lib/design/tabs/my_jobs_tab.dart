@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frinx_job_pooler/design/tabs/common/job_button.dart';
-import 'package:frinx_job_pooler/model/job_description.dart';
+import 'package:frinx_job_pooler/model/job_entry.dart';
 import 'package:frinx_job_pooler/model/job_state.dart';
 import 'package:frinx_job_pooler/rest/requests_broker.dart';
 
 import 'common/job_button.dart';
-import 'templates/job_entry_template.dart';
-import 'templates/job_list_state_template.dart';
+import 'job_list_template.dart';
 
 class MyJobsTab extends StatelessWidget {
   @override
@@ -25,10 +24,11 @@ class _JobList extends StatefulWidget {
   }
 }
 
-class _JobListState extends JobListStateTemplate {
+class _JobListState extends JobListTemplate {
+  static const String _BUTTON_TITLE = 'Report installation completed';
+
   @override
-  Future<List<JobDescription>> getFilteredJobs(
-      Future<List<JobDescription>> jobs) {
+  Future<List<JobEntry>> getFilteredJobs(Future<List<JobEntry>> jobs) {
     return jobs.then((list) => list
         .where((entry) =>
             entry.jobState == JobState.wait_for_installation_complete)
@@ -36,34 +36,21 @@ class _JobListState extends JobListStateTemplate {
   }
 
   @override
-  JobEntryTemplate getJobEntry(
-      JobDescription jobDescription, Function jobRemovalFunction) {
-    return _JobEntry(jobDescription, jobRemovalFunction);
-  }
-}
-
-class _JobEntry extends JobEntryTemplate {
-  static const String _BUTTON_TITLE = 'Report installation completed';
-
-  const _JobEntry(JobDescription jobDescription, Function jobRemovalCallback)
-      : super(jobDescription, jobRemovalCallback);
-
-  @override
-  List<Widget> getStatelessRows(BuildContext context) {
-    var rows = super.getStatelessRows(context);
+  List<Widget> getJobEntryRows(BuildContext context, JobEntry jobEntry) {
+    var rows = super.getJobEntryRows(context, jobEntry);
     rows.add(
-      JobButton(_BUTTON_TITLE, () => _handleButtonPressed(context)),
+      JobButton(_BUTTON_TITLE, () => _handleButtonPressed(context, jobEntry)),
     );
     return rows;
   }
 
-  void _handleButtonPressed(BuildContext context) {
-    RequestsBroker().postFinishingJob(jobDescription.jobId);
+  void _handleButtonPressed(BuildContext context, JobEntry jobEntry) {
+    RequestsBroker().postFinishingJob(jobEntry.jobId);
     Scaffold.of(context).showSnackBar(
       SnackBar(
-        content: Text('Job \'${jobDescription.jobTitle}\' has been completed'),
+        content: Text('Job \'${jobEntry.jobTitle}\' has been completed'),
       ),
     );
-    Function.apply(jobRemovalCallback, [jobDescription.jobId]);
+    removeJobFromCache(jobEntry);
   }
 }
