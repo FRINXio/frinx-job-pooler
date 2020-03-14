@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/design/tabs/job_pool_tab.dart';
-import 'package:frinx_job_pooler/design/tabs/my_jobs_tab.dart';
-import 'package:frinx_job_pooler/utils/global_app_constants.dart';
 
-const TAB_TEXT_PADDING = ' ';
+import '../widget_settings.dart';
+import 'tabs/job_pool_tab.dart';
+import 'tabs/my_jobs_tab.dart';
 
 class AppHome extends StatefulWidget {
   @override
@@ -12,6 +11,7 @@ class AppHome extends StatefulWidget {
 
 class _HomeAppTabsState extends State<AppHome>
     with SingleTickerProviderStateMixin {
+  static const FRINX_LOGO_PATH = 'images/frinx_logo.png';
   TabController _controller;
 
   @override
@@ -25,24 +25,24 @@ class _HomeAppTabsState extends State<AppHome>
 
   @override
   Widget build(BuildContext context) {
-    var constants = GlobalAppConstants.of(context);
+    var constants = WidgetSettings.of(context);
     return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
+      backgroundColor: constants.colorOfBackground,
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
             title: Row(
               children: <Widget>[
-                Text(constants.appTitle),
+                Text(constants.titleOfAppBar),
                 Container(
                     child: Image(
                         fit: BoxFit.fitWidth,
-                        width: constants.frinxLogoWidth,
-                        image: const AssetImage('images/row_logo.png'))),
+                        width: constants.widthOfFrinxLogo,
+                        image: const AssetImage(FRINX_LOGO_PATH))),
               ],
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
             ),
-            backgroundColor: Colors.blueGrey[900],
+            backgroundColor: constants.colorOfComponent,
             snap: true,
             floating: true,
             bottom: TabBar(
@@ -51,7 +51,8 @@ class _HomeAppTabsState extends State<AppHome>
                   icon: Row(
                     children: <Widget>[
                       const Icon(Icons.home),
-                      Text(TAB_TEXT_PADDING + constants.tabMyJobsName)
+                      SizedBox(width: constants.intendIconFromText),
+                      Text(constants.titleOfMyJobsTab)
                     ],
                   ),
                 ),
@@ -59,7 +60,8 @@ class _HomeAppTabsState extends State<AppHome>
                   icon: Row(
                     children: <Widget>[
                       const Icon(Icons.format_list_numbered),
-                      Text(TAB_TEXT_PADDING + constants.tabJobPoolName)
+                      SizedBox(width: constants.intendIconFromText),
+                      Text(constants.titleOfJobPoolTab)
                     ],
                   ),
                 ),

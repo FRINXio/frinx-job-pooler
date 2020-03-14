@@ -1,4 +1,4 @@
-import 'package:frinx_job_pooler/model/job_state.dart';
+import 'job_state.dart';
 
 class JobEntry {
   final String jobId;

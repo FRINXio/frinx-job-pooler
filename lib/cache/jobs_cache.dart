@@ -1,5 +1,5 @@
-import 'package:frinx_job_pooler/model/job_entry.dart';
-import 'package:frinx_job_pooler/rest/requests_broker.dart';
+import '../model/job_entry.dart';
+import '../utils/requests_broker.dart';
 
 class JobsCache {
   static final JobsCache _instance = JobsCache._internal();

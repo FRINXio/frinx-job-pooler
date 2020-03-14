@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/cache/jobs_cache.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_description_widget.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_location_widget.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_title_widget.dart';
-import 'package:frinx_job_pooler/design/tabs/common/job_workflow_output_widget.dart';
-import 'package:frinx_job_pooler/model/job_entry.dart';
+
+import '../../cache/jobs_cache.dart';
+import '../../model/job_entry.dart';
+import '../../widget_settings.dart';
+import 'common/job_description_widget.dart';
+import 'common/job_location_widget.dart';
+import 'common/job_title_widget.dart';
+import 'common/job_workflow_output_widget.dart';
 
 abstract class JobListTemplate extends State {
+  static const CONNECTION_LOST_MSG = 'Cannot connect to conductor';
+
   final _jobsCache = JobsCache();
   Future<List<JobEntry>> _futureJobData;
 
@@ -38,11 +42,12 @@ abstract class JobListTemplate extends State {
   }
 
   Align _handleLoadingError(BuildContext context) {
+    var constants = WidgetSettings.of(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Scaffold.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cannot connect to conductor'),
-          backgroundColor: Colors.deepOrange,
+        SnackBar(
+          content: const Text(CONNECTION_LOST_MSG),
+          backgroundColor: constants.colorOfWarningSnackBar,
         ),
       );
     });
@@ -56,7 +61,7 @@ abstract class JobListTemplate extends State {
             builder: (BuildContext context, BoxConstraints constraints) {
               return Icon(
                 Icons.signal_wifi_off,
-                color: Colors.grey,
+                color: constants.colorOfOverlayTabIcon,
                 size: constraints.biggest.width / 2.0,
               );
             },
@@ -117,6 +122,5 @@ abstract class JobListTemplate extends State {
     });
   }
 
-  Future<List<JobEntry>> getFilteredJobs(
-      Future<List<JobEntry>> jobs);
+  Future<List<JobEntry>> getFilteredJobs(Future<List<JobEntry>> jobs);
 }

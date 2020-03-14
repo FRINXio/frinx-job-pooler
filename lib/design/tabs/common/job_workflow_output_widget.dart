@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/model/job_entry.dart';
-import 'package:frinx_job_pooler/utils/global_app_constants.dart';
+
+import '../../../model/job_entry.dart';
+import '../../../widget_settings.dart';
 
 class JobWorkflowOutputWidget extends StatelessWidget {
   final JobEntry jobEntry;
@@ -9,14 +10,14 @@ class JobWorkflowOutputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var constants = GlobalAppConstants.of(context);
+    var constants = WidgetSettings.of(context);
     return Container(
       child: Row(
         children: <Widget>[
           Icon(
             Icons.work,
             size: constants.sizeJobPoolIcon,
-            color: Colors.blueGrey[500],
+            color: constants.colorOfIcon,
           ),
           SizedBox(width: constants.intendIconFromText),
           Expanded(

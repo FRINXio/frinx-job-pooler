@@ -1,16 +1,18 @@
 import 'package:dio/dio.dart';
-import 'package:frinx_job_pooler/model/job_entry.dart';
-import 'package:frinx_job_pooler/model/job_state.dart';
+
+import '../model/job_entry.dart';
+import '../model/job_state.dart';
 
 class RequestsBroker {
-  static const String DOMAIN = "http://10.103.5.14:8080/api/workflow";
-  static const String URL_ALL_JOBS = "/running/create_operator_job";
+  static const DOMAIN = "http://10.103.5.14:8080/api/workflow";
+  static const URL_ALL_JOBS = "/running/create_operator_job";
+  static const CLIENT_TIMEOUT = 5000;
 
   static final RequestsBroker _instance = RequestsBroker._internal();
 
   final Dio _restClient = new Dio(BaseOptions(
-      receiveTimeout: 5000,
-      connectTimeout: 5000));
+      receiveTimeout: CLIENT_TIMEOUT,
+      connectTimeout: CLIENT_TIMEOUT));
 
   factory RequestsBroker() {
     return _instance;
@@ -67,8 +69,8 @@ class RequestsBroker {
       if (element["status"] == "IN_PROGRESS") {
         if (element["taskDefName"] ==
             _getJobStateString(JobState.wait_for_acceptance)) {
-          jobEntry = JobEntry.fromJson(
-              response.data, JobState.wait_for_acceptance);
+          jobEntry =
+              JobEntry.fromJson(response.data, JobState.wait_for_acceptance);
         } else if (element["taskDefName"] ==
             _getJobStateString(JobState.wait_for_installation_complete)) {
           jobEntry = JobEntry.fromJson(

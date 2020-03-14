@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/model/job_entry.dart';
-import 'package:frinx_job_pooler/utils/global_app_constants.dart';
-import 'package:frinx_job_pooler/utils/map_utils.dart';
+
+import '../../../model/job_entry.dart';
+import '../../../utils/map_utils.dart';
+import '../../../widget_settings.dart';
 
 class JobLocationWidget extends StatelessWidget {
   final JobEntry jobEntry;
@@ -10,7 +11,7 @@ class JobLocationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var constants = GlobalAppConstants.of(context);
+    var constants = WidgetSettings.of(context);
     return Container(
       child: Row(
         children: <Widget>[
@@ -32,11 +33,11 @@ class JobLocationWidget extends StatelessWidget {
   }
 
   Widget _getGpsIconWidget(
-      GlobalAppConstants constants, JobCoordinates jobCoordinates) {
+      WidgetSettings constants, JobCoordinates jobCoordinates) {
     Widget iconWidget = Icon(
       Icons.gps_fixed,
       size: constants.sizeJobPoolIcon,
-      color: Colors.blueGrey[500],
+      color: constants.colorOfIcon,
     );
     if (jobCoordinates != null) {
       iconWidget = GestureDetector(

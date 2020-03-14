@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/model/job_entry.dart';
-import 'package:frinx_job_pooler/utils/global_app_constants.dart';
+
+import '../../../model/job_entry.dart';
+import '../../../widget_settings.dart';
 
 class JobTitleWidget extends StatelessWidget {
   final JobEntry jobEntry;
@@ -9,11 +10,11 @@ class JobTitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var constants = GlobalAppConstants.of(context);
+    var constants = WidgetSettings.of(context);
     return Row(
       children: <Widget>[
         CircleAvatar(
-          backgroundColor: Colors.blueGrey[900],
+          backgroundColor: constants.colorOfComponent,
           child: Text(
             jobEntry.jobTitle.substring(0, 1),
             style: const TextStyle(
