@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frinx_job_pooler/model/job_state.dart';
 
 import '../../cache/jobs_cache.dart';
 import '../../model/job_entry.dart';
@@ -12,7 +13,7 @@ abstract class JobListTemplate extends State {
   static const CONNECTION_LOST_MSG = 'Cannot connect to conductor';
 
   final _jobsCache = JobsCache();
-  Future<List<JobEntry>> _futureJobData;
+  Future<Map<JobEntry, JobState>> _futureJobData;
 
   @override
   void initState() {
@@ -22,7 +23,7 @@ abstract class JobListTemplate extends State {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<JobEntry>>(
+    return FutureBuilder<Map<JobEntry, JobState>>(
       future: _futureJobData,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -72,8 +73,8 @@ abstract class JobListTemplate extends State {
   }
 
   RefreshIndicator _handleFinishedLoading(
-      AsyncSnapshot<List<JobEntry>> snapshot) {
-    var jobData = snapshot.data;
+      AsyncSnapshot<Map<JobEntry, JobState>> snapshot) {
+    var jobData = List.of(snapshot.data.keys);
     return RefreshIndicator(
       onRefresh: _refreshList,
       child: ListView.builder(
@@ -122,5 +123,6 @@ abstract class JobListTemplate extends State {
     });
   }
 
-  Future<List<JobEntry>> getFilteredJobs(Future<List<JobEntry>> jobs);
+  Future<Map<JobEntry, JobState>> getFilteredJobs(
+      Future<Map<JobEntry, JobState>> jobs);
 }

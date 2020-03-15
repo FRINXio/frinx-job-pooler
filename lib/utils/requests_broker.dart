@@ -11,8 +11,7 @@ class RequestsBroker {
   static final RequestsBroker _instance = RequestsBroker._internal();
 
   final Dio _restClient = new Dio(BaseOptions(
-      receiveTimeout: CLIENT_TIMEOUT,
-      connectTimeout: CLIENT_TIMEOUT));
+      receiveTimeout: CLIENT_TIMEOUT, connectTimeout: CLIENT_TIMEOUT));
 
   factory RequestsBroker() {
     return _instance;
@@ -45,40 +44,46 @@ class RequestsBroker {
     return response;
   }
 
-  Future<List<JobEntry>> getMyJobData() async {
+  Future<Map<JobEntry, JobState>> getMyJobData() async {
     var response = await _restClient.get(DOMAIN + URL_ALL_JOBS);
 
-    List<dynamic> responseAllJobsDynamic =
+    final List<dynamic> responseAllJobsDynamic =
         response.data.map((dynamic model) => model).toList();
-    List<String> responseAllJobs =
+    final List<String> responseAllJobs =
         responseAllJobsDynamic.cast<String>().toList();
 
-    List<Future<JobEntry>> jobEntries = [];
+    final List<Future<MapEntry<JobEntry, JobState>>> jobEntries = [];
     responseAllJobs.forEach((workflow) {
-      Future<JobEntry> jobEntry = _getOneMyJobData(workflow);
+      Future<MapEntry<JobEntry, JobState>> jobEntry =
+          _getOneMyJobData(workflow);
       jobEntries.add(jobEntry);
     });
 
-    return Future.wait(jobEntries);
+    return Future.wait(jobEntries).then((mapEntries) {
+      final Map<JobEntry, JobState> outputMap = {};
+      mapEntries.forEach(
+          (entry) => outputMap.putIfAbsent(entry.key, () => entry.value));
+      return outputMap;
+    });
   }
 
-  Future<JobEntry> _getOneMyJobData(String workflow) async {
+  Future<MapEntry<JobEntry, JobState>> _getOneMyJobData(String workflow) async {
     var response = await _restClient.get(DOMAIN + "/" + workflow);
-    JobEntry jobEntry;
+    MapEntry<JobEntry, JobState> jobData;
     response.data['tasks'].forEach((element) {
       if (element["status"] == "IN_PROGRESS") {
         if (element["taskDefName"] ==
             _getJobStateString(JobState.wait_for_acceptance)) {
-          jobEntry =
-              JobEntry.fromJson(response.data, JobState.wait_for_acceptance);
+          jobData = MapEntry(
+              JobEntry.fromJson(response.data), JobState.wait_for_acceptance);
         } else if (element["taskDefName"] ==
             _getJobStateString(JobState.wait_for_installation_complete)) {
-          jobEntry = JobEntry.fromJson(
-              response.data, JobState.wait_for_installation_complete);
+          jobData = MapEntry(JobEntry.fromJson(response.data),
+              JobState.wait_for_installation_complete);
         }
       }
     });
-    return jobEntry;
+    return jobData;
   }
 
   static _getJobStateString(JobState jobState) {

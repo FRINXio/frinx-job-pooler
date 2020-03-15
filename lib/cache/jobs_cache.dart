@@ -1,3 +1,5 @@
+import 'package:frinx_job_pooler/model/job_state.dart';
+
 import '../model/job_entry.dart';
 import '../utils/requests_broker.dart';
 
@@ -12,25 +14,25 @@ class JobsCache {
 
   JobsCache._internal();
 
-  Future<List<JobEntry>> actualJobList;
+  Future<Map<JobEntry, JobState>> actualJobList;
 
-  Future<List<JobEntry>> getCachedJobData() {
+  Future<Map<JobEntry, JobState>> getCachedJobData() {
     if (actualJobList == null) {
       actualJobList = _requestsBroker.getMyJobData();
     }
     return actualJobList;
   }
 
-  Future<List<JobEntry>> refreshJobData() {
+  Future<Map<JobEntry, JobState>> refreshJobData() {
     actualJobList = _requestsBroker.getMyJobData();
     return actualJobList;
   }
 
-  Future<List<JobEntry>> removeJobEntryFromCache(String jobId) {
-    actualJobList = actualJobList.then((list) {
-      List<JobEntry> tempList = List.of(list);
-      tempList.removeWhere((entry) => entry.jobId == jobId);
-      return tempList;
+  Future<Map<JobEntry, JobState>> removeJobEntryFromCache(String jobId) {
+    actualJobList = actualJobList.then((originalMap) {
+      final Map<JobEntry, JobState> tempMap = Map.of(originalMap);
+      tempMap.removeWhere((jobEntry, jobState) => jobEntry.jobId == jobId);
+      return tempMap;
     });
     return actualJobList;
   }

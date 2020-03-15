@@ -25,10 +25,10 @@ class _JobList extends StatefulWidget {
 
 class _JobListState extends JobListTemplate {
   @override
-  Future<List<JobEntry>> getFilteredJobs(Future<List<JobEntry>> jobs) {
-    return jobs.then((list) => list
-        .where((entry) => entry.jobState == JobState.wait_for_acceptance)
-        .toList());
+  Future<Map<JobEntry, JobState>> getFilteredJobs(
+      Future<Map<JobEntry, JobState>> jobs) {
+    return jobs.then((originalMap) => Map.from(originalMap)
+      ..removeWhere((_, jobState) => jobState == JobState.wait_for_acceptance));
   }
 
   @override
