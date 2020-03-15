@@ -36,4 +36,24 @@ class JobsCache {
     });
     return actualJobList;
   }
+
+  Future<Map<JobEntry, JobState>> moveJobToAcceptedState(String jobId) {
+    actualJobList = actualJobList.then((originalMap) {
+      var foundJobEntry;
+      for (var jobData in originalMap.entries) {
+        if (jobData.key.jobId == jobId) {
+          foundJobEntry = jobData.key;
+          break;
+        }
+      }
+      if (foundJobEntry == null) {
+        return originalMap;
+      }
+      Map<JobEntry, JobState> mapp = Map.from(originalMap)
+        ..update(
+            foundJobEntry, (value) => JobState.wait_for_installation_complete);
+      return mapp;
+    });
+    return actualJobList;
+  }
 }

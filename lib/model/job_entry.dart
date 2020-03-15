@@ -6,6 +6,15 @@ class JobEntry {
   final JobCoordinates jobCoordinates;
   final String workflowOutput;
 
+  JobEntry(
+      String jobId, String jobTitle, String description, String location)
+      : jobId = jobId,
+        jobTitle = jobTitle,
+        description = description,
+        location = location,
+        jobCoordinates = null,
+        workflowOutput = null;
+
   JobEntry.fromJson(Map<String, dynamic> json)
       : jobId = json['workflowId'],
         jobTitle = json["input"]["job_name"],

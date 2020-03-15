@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frinx_job_pooler/model/job_state.dart';
 
 import '../../cache/jobs_cache.dart';
 import '../../model/job_entry.dart';
+import '../../model/job_state.dart';
 import '../../widget_settings.dart';
 import 'common/job_description_widget.dart';
 import 'common/job_location_widget.dart';
@@ -11,20 +11,24 @@ import 'common/job_workflow_output_widget.dart';
 
 abstract class JobListTemplate extends State {
   static const CONNECTION_LOST_MSG = 'Cannot connect to conductor';
+  static const UNABLE_TO_SEND_REQUEST = 'Failed to send request to conductor.';
 
   final _jobsCache = JobsCache();
+  final Map<JobEntry, bool> lockedButtons = {};
+
   Future<Map<JobEntry, JobState>> _futureJobData;
 
   @override
   void initState() {
     super.initState();
-    _futureJobData = getFilteredJobs(_jobsCache.getCachedJobData());
+    _futureJobData = _jobsCache.getCachedJobData();
   }
 
   @override
   Widget build(BuildContext context) {
+    lockedButtons.removeWhere((_, removed) => removed);
     return FutureBuilder<Map<JobEntry, JobState>>(
-      future: _futureJobData,
+      future: getFilteredJobs(_futureJobData),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return _handleLoadingError(context);
@@ -120,6 +124,26 @@ abstract class JobListTemplate extends State {
   void removeJobFromCache(JobEntry jobEntry) {
     setState(() {
       _futureJobData = _jobsCache.removeJobEntryFromCache(jobEntry.jobId);
+      lockedButtons[jobEntry] = true;
+    });
+  }
+
+  void moveJobToAcceptedState(JobEntry jobEntry) {
+    setState(() {
+      _futureJobData = _jobsCache.moveJobToAcceptedState(jobEntry.jobId);
+      lockedButtons[jobEntry] = true;
+    });
+  }
+
+  void handleFailedRequest(BuildContext context, JobEntry jobEntry) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(UNABLE_TO_SEND_REQUEST),
+        backgroundColor: WidgetSettings.of(context).colorOfWarningSnackBar,
+      ),
+    );
+    setState(() {
+      lockedButtons.remove(jobEntry);
     });
   }
 

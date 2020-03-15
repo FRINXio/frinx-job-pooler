@@ -29,27 +29,45 @@ class _JobListState extends JobListTemplate {
   Future<Map<JobEntry, JobState>> getFilteredJobs(
       Future<Map<JobEntry, JobState>> jobs) {
     return jobs.then((originalMap) => Map.from(originalMap)
-        ..removeWhere((_, jobState) =>
-            jobState == JobState.wait_for_installation_complete));
+      ..removeWhere((_, jobState) => jobState == JobState.wait_for_acceptance));
   }
 
   @override
   List<Widget> getJobEntryRows(BuildContext context, JobEntry jobEntry) {
     var rows = super.getJobEntryRows(context, jobEntry);
     rows.add(
-      JobButton(WidgetSettings.of(context).titleOfInstallCompleteButton,
-          () => _handleButtonPressed(context, jobEntry)),
+      JobButton(
+          WidgetSettings.of(context).titleOfInstallCompleteButton,
+          () async => lockedButtons.containsKey(jobEntry)
+              ? null
+              : _handleButtonPressed(context, jobEntry)),
     );
     return rows;
   }
 
-  void _handleButtonPressed(BuildContext context, JobEntry jobEntry) {
-    RequestsBroker().postFinishingJob(jobEntry.jobId);
+  Future<void> _handleButtonPressed(
+      BuildContext context, JobEntry jobEntry) async {
+    setState(() {
+      lockedButtons[jobEntry] = false;
+    });
+
+    var response;
+    try {
+      response = await RequestsBroker().postFinishingJob(jobEntry.jobId);
+    } catch (error) {
+      handleFailedRequest(context, jobEntry);
+      return;
+    }
+
+    if (response.statusCode >= 400 && response.statusCode < 600) {
+      handleFailedRequest(context, jobEntry);
+      return;
+    }
+    removeJobFromCache(jobEntry);
     Scaffold.of(context).showSnackBar(
       SnackBar(
         content: Text('Job \'${jobEntry.jobTitle}\' has been completed'),
       ),
     );
-    removeJobFromCache(jobEntry);
   }
 }
