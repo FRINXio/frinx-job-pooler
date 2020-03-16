@@ -1,23 +1,29 @@
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/job_entry.dart';
 import '../model/job_state.dart';
+import 'shared_constants.dart';
 
 class RequestsBroker {
-  static const DOMAIN = "http://10.103.5.14:8080/api/workflow";
-  static const URL_ALL_JOBS = "/running/create_operator_job";
-  static const CLIENT_TIMEOUT = 5000;
-
   static final RequestsBroker _instance = RequestsBroker._internal();
 
-  final Dio _restClient = new Dio(BaseOptions(
-      receiveTimeout: CLIENT_TIMEOUT, connectTimeout: CLIENT_TIMEOUT));
+  Future<SharedPreferences> sharedPreferencesFuture;
+  Future<Dio> _restClientFuture;
 
   factory RequestsBroker() {
     return _instance;
   }
 
-  RequestsBroker._internal();
+  RequestsBroker._internal() {
+    sharedPreferencesFuture = SharedPreferences.getInstance();
+    _restClientFuture = sharedPreferencesFuture.then((prefs) {
+      var clientTimeout =
+          prefs.getInt(SharedConstants.PREFS_HTTP_CLIENT_TIMEOUT);
+      return new Dio(BaseOptions(
+          receiveTimeout: clientTimeout, connectTimeout: clientTimeout));
+    });
+  }
 
   Future<Response> postAcceptingJob(String id) async {
     Map<String, String> input = {
@@ -29,7 +35,9 @@ class RequestsBroker {
       'version': 1,
       'input': input
     };
-    var response = await _restClient.post(DOMAIN, data: body);
+    var restClient = await _restClientFuture;
+    var domain = await _getDomain();
+    var response = await restClient.post(domain, data: body);
     return response;
   }
 
@@ -40,12 +48,17 @@ class RequestsBroker {
       'version': 1,
       'input': input
     };
-    var response = await _restClient.post(DOMAIN, data: body);
+    var restClient = await _restClientFuture;
+    var domain = await _getDomain();
+    var response = await restClient.post(domain, data: body);
     return response;
   }
 
   Future<Map<JobEntry, JobState>> getMyJobData() async {
-    var response = await _restClient.get(DOMAIN + URL_ALL_JOBS);
+    var restClient = await _restClientFuture;
+    var domain = await _getDomain();
+    var urlAllJobs = await _getUrlOfAllJobs();
+    var response = await restClient.get(domain + urlAllJobs);
 
     final List<dynamic> responseAllJobsDynamic =
         response.data.map((dynamic model) => model).toList();
@@ -68,7 +81,9 @@ class RequestsBroker {
   }
 
   Future<MapEntry<JobEntry, JobState>> _getOneMyJobData(String workflow) async {
-    var response = await _restClient.get(DOMAIN + "/" + workflow);
+    var restClient = await _restClientFuture;
+    var domain = await _getDomain();
+    var response = await restClient.get(domain + "/" + workflow);
     MapEntry<JobEntry, JobState> jobData;
     response.data['tasks'].forEach((element) {
       if (element["status"] == "IN_PROGRESS") {
@@ -84,6 +99,19 @@ class RequestsBroker {
       }
     });
     return jobData;
+  }
+
+  Future<String> _getDomain() async {
+    var prefs = await sharedPreferencesFuture;
+    var ipAddress = prefs.getString(SharedConstants.PREFS_IP_ADDRESS);
+    var port = prefs.get(SharedConstants.PREFS_PORT);
+    return "http://$ipAddress:$port/api/workflow";
+  }
+
+  Future<String> _getUrlOfAllJobs() async {
+    var prefs = await sharedPreferencesFuture;
+    var jobPoolName = prefs.getString(SharedConstants.PREFS_JOB_POOL_NAME);
+    return "/running/$jobPoolName";
   }
 
   static _getJobStateString(JobState jobState) {
